@@ -74,11 +74,11 @@ class ChampionsController extends Controller
             //calcula o valor da aposta
             $valorAposta = 15; // Valor fixo da aposta, você pode mudar isso se necessário
 
-            if(null != $pri_gol || null != $pri_cartao) {
+            if(null != $pri_gol || '' != $pri_cartao || false != $pri_gol) {
                 $valorAposta += 10; // Aposta com previsão de gol ou cartão
             }
 
-            if(null != $pri_cartao || null != $pri_gol) {
+            if(null != $pri_cartao || '' != $pri_cartao || false != $pri_cartao) {
                 $valorAposta += 5; // Aposta com previsão de cartão ou gol
             }
 
@@ -97,7 +97,9 @@ class ChampionsController extends Controller
             DB::commit();
             // 3. Calcula o valor da Aposta e Retornar sucesso
 
-            return $this->Success("Aposta registrada com sucesso!");
+            $data['valor_aposta'] = number_format($valorAposta, 2, ',', '.'); // Formata o valor da aposta para o padrão brasileiro
+
+            return $this->Success("Aposta registrada com sucesso!", 200, $data);
 
         } catch (\Exception $e) {
             DB::rollback();

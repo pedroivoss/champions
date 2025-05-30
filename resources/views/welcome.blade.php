@@ -206,6 +206,7 @@
     <script src="{{ asset('js/script.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const chave_pix = "{{ env('CHAVE_PIX') }}";
             const betForm = document.getElementById('betForm');
             const betsTableBody = document.querySelector('#betsTable tbody');
             const clearButton = document.getElementById('clearButton');
@@ -321,7 +322,57 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            alert('Sua aposta foi registrada com sucesso!');
+                            // Exibe um alerta de sucesso
+                             @php
+                                $url_image = env('APP_URL'). '/images/figurinhas';
+                            @endphp
+
+                            let randonomImage =  randonImage()
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Aposta Registrada!',
+                                html: `<div style="text-align: left;">
+                                        <p><strong>Valor Total da Aposta: R$${result.data.valor_aposta}</strong></p>
+                                        <p>O pagamento pode ser efetuado via dinheiro em espécie ou via pix.</p>
+                                        <p><strong>Chave Pix:</strong> <span id="pixKeySuccessModal">${chave_pix}</span>
+                                            <button id="copyPixButtonSuccessModal" style="
+                                                background-color: #f7d002; /* Amarelo do tema */
+                                                color: #1a1740; /* Azul escuro do tema */
+                                                border: none;
+                                                border-radius: 5px;
+                                                padding: 5px 10px;
+                                                margin-left: 10px;
+                                                cursor: pointer;
+                                                font-weight: bold;
+                                                transition: background-color 0.3s ease;
+                                            ">Copiar</button>
+                                        </p>
+                                        </div>`,
+                                imageUrl: `{{$url_image}}/${randonomImage}.webp`,
+                                imageWidth: 400,
+                                imageAlt: 'Imagem de Sucesso',
+                                confirmButtonText: 'Entendi',
+                                // Adicione a função didOpen para anexar o evento de clique após o modal ser aberto
+                                didOpen: () => {
+                                    const copyButton = document.getElementById('copyPixButtonSuccessModal');
+                                    const pixKeySpan = document.getElementById('pixKeySuccessModal');
+
+                                    copyButton.addEventListener('click', () => {
+                                        const pixKey = pixKeySpan.textContent;
+                                        navigator.clipboard.writeText(pixKey).then(() => {
+                                            copyButton.textContent = 'Copiado!';
+                                            setTimeout(() => {
+                                                copyButton.textContent = 'Copiar';
+                                            }, 2000);
+                                        }).catch(err => {
+                                            console.error('Erro ao copiar a chave Pix: ', err);
+                                            alert('Falha ao copiar a chave Pix. Por favor, copie manualmente.');
+                                        });
+                                    });
+                                }
+                            });
+
                             betForm.reset();
                             $('.select2-enable').val(null).trigger('change'); // Reseta Select2
                             loadBets();
@@ -390,7 +441,7 @@
                                 </ul>
                                 <p>O pagamento pode ser efetuado no dia do jogo, via dinheiro em espécie ou via pix.</p>
 
-                                <p><strong>Chave Pix:</strong> <span id="pixKey">438af8b9-6a6c-4887-90b4-4aae8b4b4843</span>
+                                <p><strong>Chave Pix:</strong> <span id="pixKey">${chave_pix}</span>
                                     <button id="copyPixButton" style="
                                         background-color: #f7d002; /* Amarelo do tema */
                                         color: #1a1740; /* Azul escuro do tema */
@@ -425,8 +476,11 @@
                                         copyButton.textContent = 'Copiar';
                                     }, 2000); // Volta ao texto original após 2 segundos
                                 }).catch(err => {
-                                    console.error('Erro ao copiar a chave Pix: ', err);
-                                    alert('Falha ao copiar a chave Pix. Por favor, copie manualmente.');
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erro ao Copiar',
+                                        text: 'Falha ao copiar a chave Pix. Por favor, copie manualmente.'
+                                    });
                                 });
                             });
                         }
