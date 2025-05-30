@@ -28,14 +28,14 @@
             <form id="betForm" action="{{ url('/submit_bet') }}" method="POST">
                 @csrf <div class="form-group">
                     <label for="playerName">Nome:</label>
-                    <input type="text" id="playerName" name="playerName" required>
+                    <input type="text" id="playerName" name="playerName" placeholder="Nome" required>
                 </div>
                 <div class="form-group">
                     <label for="playerCPF">CPF:</label>
                     <input type="text" id="playerCPF" name="playerCPF" pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="Ex: 123.456.789-00" required>
                 </div>
 
-                <h3>Placar: (R$ 10,00)</h3>
+                <h3>Placar: (R$ 15,00)</h3>
                 <div class="score-input-container">
                     <div class="team-score-input">
                         <img src="{{asset('images/logos/psg.png')}}" alt="Logo PSG" class="team-logo-small">
@@ -49,8 +49,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="firstGoalScorer">Quem faz o primeiro gol: (opicional R$ 5,00)</label>
-                    <select id="firstGoalScorer" name="firstGoalScorer" class="select2-enable" required>
+                    <label for="firstGoalScorer">Quem faz o primeiro gol: (opcional R$ 10,00)</label>
+                    <select id="firstGoalScorer" name="firstGoalScorer" class="select2-enable">
                         <option value="">Selecione o Jogador</option>
                         <optgroup label="Inter de Milão">
                             <option value="Inter - Yann Sommer">Yann Sommer</option>
@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="firstCardTeam">Quem leva o primeiro cartão: (opicional R$ 5,00)</label>
+                    <label for="firstCardTeam">Quem leva o primeiro cartão: (opcional R$ 5,00)</label>
                     <select id="firstCardTeam" name="firstCardTeam" class="select2-enable">
                         <option value="">Selecione o Jogador</option>
                         <optgroup label="Inter de Milão">
@@ -166,11 +166,6 @@
                     </select>
                 </div>
 
-                <div class="form-group" style="display: none;">
-                    <label for="firstGoalTime">Minuto aproximado do primeiro gol?</label>
-                    <input type="number" id="firstGoalTime" name="firstGoalTime" min="0" max="120" placeholder="Ex: 23">
-                </div>
-
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" id="rulesButton">Regras</button>
                     <button type="button" class="btn-secondary" id="clearButton">Limpar</button>
@@ -203,10 +198,12 @@
         </div>
     </footer>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.22.0/dist/sweetalert2.all.min.js"></script>
-    {{--<script src="{{ asset('js/script.js') }}"></script>--}}
+{{--<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
+    <script src="{{ asset('js/plugins/jquery-3.7.1.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/select2.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/sweetalert2.all.min.js') }}"></script>
+    <script src="{{ asset('js/plugins/blockUI.js') }}"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const betForm = document.getElementById('betForm');
@@ -241,40 +238,48 @@
             });
 
             // Função para carregar apostas existentes
+            // Função para carregar apostas existentes
             async function loadBets() {
+                const betsTableBody = document.getElementById('betsTable').querySelector('tbody'); // Garante que betsTableBody está definido
                 try {
-                    const response = await fetch('/get_bets'); // Use a rota Laravel
-                    const bets = await response.json();
+                    const response = await fetch("{{ route('get.bets')}}");
+                    const bets = await response.json(); // 'bets' agora será um array de objetos Aposta
 
-                    betsTableBody.innerHTML = '';
+                    betsTableBody.innerHTML = ''; // Limpa o corpo da tabela
+
                     if (bets.length === 0) {
                         const noBetsRow = betsTableBody.insertRow();
                         const cell = noBetsRow.insertCell();
-                        cell.colSpan = 4;
+                        cell.colSpan = 4; // Certifique-se de que o colSpan corresponde ao número de colunas do seu thead
                         cell.textContent = 'Nenhuma aposta registrada ainda. Seja o primeiro!';
                         cell.style.textAlign = 'center';
                         cell.style.padding = '20px';
                         cell.style.color = '#aaa';
                     } else {
+                        // O erro 'map' ou 'forEach' em undefined será evitado aqui porque bets será sempre um array (mesmo que vazio)
                         bets.forEach(bet => {
                             const row = betsTableBody.insertRow();
-                            row.insertCell().textContent = bet.playerName;
-                            row.insertCell().textContent = `${bet.scoreTeam1} x ${bet.scoreTeam2}`;
-                            row.insertCell().textContent = bet.firstCardTeam;
-                            row.insertCell().textContent = bet.firstGoalScorer;
+                            // Ajuste os nomes das propriedades para corresponder às colunas do seu banco de dados
+                            row.insertCell().textContent = bet.nome; // Era bet.playerName
+                            row.insertCell().textContent = `PSG ${bet.timeA} x ${bet.timeB} Inter`; // Eram bet.scoreTeam1, bet.scoreTeam2
+                            row.insertCell().textContent = bet.pri_cartao; // Era bet.firstCardTeam
+                            row.insertCell().textContent = bet.pri_gol; // Era bet.firstGoalScorer
                         });
                     }
                 } catch (error) {
                     console.error('Erro ao carregar apostas:', error);
                     const errorRow = betsTableBody.insertRow();
                     const cell = errorRow.insertCell();
-                    cell.colSpan = 4;
+                    cell.colSpan = 4; // Ajuste conforme seu thead
                     cell.textContent = 'Erro ao carregar apostas. Tente novamente mais tarde.';
                     cell.style.textAlign = 'center';
                     cell.style.padding = '20px';
                     cell.style.color = 'red';
                 }
             }
+
+            // Chame a função para carregar as apostas quando a página carregar
+            document.addEventListener('DOMContentLoaded', loadBets);
 
             // Lida com o envio do formulário
             if (betForm) {
@@ -284,8 +289,22 @@
                     const formData = new FormData(betForm);
                     const data = Object.fromEntries(formData.entries());
 
-                    if (!data.playerName || !data.playerCPF || data.scoreTeam1 === '' || data.scoreTeam2 === '' || !data.firstCardTeam || !data.firstGoalScorer) {
-                        alert('Por favor, preencha todos os campos obrigatórios da aposta.');
+                    // Nova validação de CPF no JS
+                    if (!isValidCPF(data.playerCPF)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'CPF Inválido',
+                            text: 'Por favor, insira um CPF válido no formato.'
+                        });
+                        return; // Impede o envio do formulário
+                    }
+
+                    if (!data.playerName || !data.playerCPF || data.scoreTeam1 === '' || data.scoreTeam2 === '') {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Campos Obrigatórios',
+                                text: 'Por favor, preencha todos os campos obrigatórios da aposta.'
+                            });
                         return;
                     }
 
@@ -307,11 +326,18 @@
                             $('.select2-enable').val(null).trigger('change'); // Reseta Select2
                             loadBets();
                         } else {
-                            alert('Erro ao registrar a aposta: ' + result.message);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Erro ao Registrar Aposta',
+                                text: result.message
+                            });
                         }
                     } catch (error) {
-                        console.error('Erro ao enviar aposta:', error);
-                        alert('Ocorreu um erro ao enviar sua aposta. Tente novamente.');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erro',
+                            text: 'Ocorreu um erro ao enviar sua aposta. Tente novamente.'
+                        });
                     }
                 });
             }
@@ -346,9 +372,8 @@
                         $url_image = env('APP_URL'). '/images/figurinhas';
                     @endphp
 
-                    let randonomImage = Math.floor(Math.random() * 7) + 1; // Gera um número aleatório entre 1 e 7
+                    let randonomImage =  randonImage()
 
-                    console.log(randonomImage)
                     Swal.fire({
                         icon: 'info',
                         title: "Regras do Bolão!",
@@ -359,20 +384,52 @@
                                 <p>O primeiro jogador a tomar cartão será o primeiro jogador que receber cartão, seja amarelo ou vermelho.</p>
                                 <p>Os valores das apostas são:</p>
                                 <ul>
-                                    <li>Placar do jogo: R$10,00</li>
-                                    <li>Autor do primeiro gol: R$5,00</li>
+                                    <li>Placar do jogo: R$15,00</li>
+                                    <li>Autor do primeiro gol: R$10,00</li>
                                     <li>Primeiro jogador a tomar cartão: R$5,00</li>
                                 </ul>
-                            <p>O pagamento pode ser efetuado no dia do jogo, via dinheiro em espécie ou via pix.</p>
-                            <p>O ganhador receberá o valor no dia do jogo.</p>
-                            <p>Caso tenha mais de um ganhador, o valor será dividido igualmente entre os ganhadores.</p>
-                            <p>Qualquer contestação deverá ser enviada ao advogado Igor Camargo Rangel para avaliação do caso.</p>
+                                <p>O pagamento pode ser efetuado no dia do jogo, via dinheiro em espécie ou via pix.</p>
+
+                                <p><strong>Chave Pix:</strong> <span id="pixKey">438af8b9-6a6c-4887-90b4-4aae8b4b4843</span>
+                                    <button id="copyPixButton" style="
+                                        background-color: #f7d002; /* Amarelo do tema */
+                                        color: #1a1740; /* Azul escuro do tema */
+                                        border: none;
+                                        border-radius: 5px;
+                                        padding: 5px 10px;
+                                        margin-left: 10px;
+                                        cursor: pointer;
+                                        font-weight: bold;
+                                        transition: background-color 0.3s ease;
+                                    ">Copiar</button>
+                                </p>
+                                <p>O ganhador receberá o valor no dia do jogo.</p>
+                                <p>Caso tenha mais de um ganhador, o valor será dividido igualmente entre os ganhadores.</p>
+                                <p>Qualquer contestação deverá ser enviada ao advogado Igor Camargo Rangel para avaliação do caso.</p>
                             </div>`,
                         imageUrl: `{{$url_image}}/${randonomImage}.webp`,
                         imageWidth: 400,
-                        //imageHeight: 200,
                         imageAlt: "Custom image",
-                        confirmButtonText: 'Entendi'
+                        confirmButtonText: 'Entendi',
+                        // Adicione a função didOpen para anexar o evento de clique após o modal ser aberto
+                        didOpen: () => {
+                            const copyButton = document.getElementById('copyPixButton');
+                            const pixKeySpan = document.getElementById('pixKey');
+
+                            copyButton.addEventListener('click', () => {
+                                const pixKey = pixKeySpan.textContent;
+                                navigator.clipboard.writeText(pixKey).then(() => {
+                                    // Feedback visual para o usuário
+                                    copyButton.textContent = 'Copiado!';
+                                    setTimeout(() => {
+                                        copyButton.textContent = 'Copiar';
+                                    }, 2000); // Volta ao texto original após 2 segundos
+                                }).catch(err => {
+                                    console.error('Erro ao copiar a chave Pix: ', err);
+                                    alert('Falha ao copiar a chave Pix. Por favor, copie manualmente.');
+                                });
+                            });
+                        }
                     });
                 });
             }
@@ -380,5 +437,6 @@
             loadBets();
         });
     </script>
+
 </body>
 </html>

@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('apostas', function (Blueprint $table) {
             $table->id();
-            $table->integer('cpf')->index();
+            $table->string('cpf')->index();
             $table->string('nome');
             $table->integer('timeA');
-            $table->integer('timeb');
-            $table->string('pri_gol');
-            $table->string('pri_cartao');
+            $table->integer('timeB');
+            $table->string('pri_gol')->nullable();
+            $table->string('pri_cartao')->nullable();
+            $table->decimal('valor_aposta', 10, 2)->default(15.00);
             $table->timestamps();
+            $table->tinyInteger('status')->default(1); // 1 = ativo, 0 = inativo
         });
     }
 
