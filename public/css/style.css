@@ -1,0 +1,323 @@
+/* General Body Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0d0a2f; /* Deep blue from the image */
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px; /* Reduzido para ficar mais contido, como no exemplo */
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Header */
+header {
+    background-color: #1a1740; /* Slightly lighter blue */
+    text-align: center;
+    padding-bottom: 20px;
+    position: relative;
+    overflow: hidden; /* To ensure the banner image doesn't overflow */
+    border-bottom-left-radius: 15px; /* Arredondamento para o topo */
+    border-bottom-right-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.header-banner {
+    width: 100%;
+    /* max-height: 200px; */ /* Ajuste conforme a parte da imagem que quer mostrar */
+    object-fit: cover; /* Ensures the image covers the area */
+    display: block;
+    margin-bottom: 20px;
+    /* Ajuste para usar a parte superior da imagem, como no exemplo */
+    object-position: top;
+    height: 150px; /* Altura fixa para a imagem do topo, similar ao exemplo */
+}
+
+header h1 {
+    color: #fff;
+    font-size: 2.2em; /* Um pouco menor para caber melhor */
+    margin-bottom: 5px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+header p {
+    color: #ccc;
+    font-size: 1em;
+}
+
+/* Sections */
+section {
+    background-color: #1a1740;
+    margin-bottom: 30px;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+section h2 {
+    color: #f7d002; /* Vibrant yellow from the image */
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 2em; /* Ajustado */
+    text-transform: uppercase;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+    width: calc(100% - 24px); /* Adjust padding and border */
+    padding: 12px;
+    border: 2px solid #2b2857; /* Borda mais visível */
+    border-radius: 8px; /* Cantos mais arredondados */
+    background-color: #2b2857; /* Darker blue/purple */
+    color: #fff;
+    font-size: 1.1em; /* Tamanho maior */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: #888;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #f7d002; /* Borda amarela no foco */
+    outline: none;
+    box-shadow: 0 0 8px rgba(247, 208, 2, 0.5); /* Sombra amarela no foco */
+}
+
+
+/* Specific styles for the score input container */
+.score-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Espaço entre os elementos */
+    margin-bottom: 30px;
+}
+
+.team-score-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.team-logo-small {
+    width: 60px; /* Tamanho do logo no placar */
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.1));
+}
+
+.score-input-container input[type="number"] {
+    width: 70px; /* Largura do input do placar */
+    text-align: center;
+    font-size: 1.8em; /* Tamanho da fonte do placar */
+    padding: 10px;
+    border-color: #f7d002; /* Borda amarela para os placares */
+}
+
+.score-separator {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #f7d002;
+}
+
+/* Form Actions (Buttons) */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* Submit Button */
+.btn-submit {
+    flex: 1; /* Para ocupar o espaço disponível */
+    padding: 15px;
+    background-color: #f7d002; /* Yellow */
+    color: #1a1740; /* Dark blue for text on button */
+    border: none;
+    border-radius: 8px; /* Mais arredondado */
+    font-size: 1.3em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-submit:hover {
+    background-color: #ffd700; /* Slightly lighter yellow on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+/* Secondary Buttons (Regras, Limpar) */
+.btn-secondary {
+    flex: 0.5; /* Para ocupar menos espaço que o enviar */
+    padding: 15px;
+    background-color: #2b2857; /* Cor do fundo dos inputs */
+    color: #f7d002; /* Texto amarelo */
+    border: 2px solid #f7d002; /* Borda amarela */
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.btn-secondary:hover {
+    background-color: #f7d002; /* Fundo amarelo no hover */
+    color: #1a1740; /* Texto azul no hover */
+    border-color: #1a1740; /* Borda azul no hover */
+    transform: translateY(-2px);
+}
+
+/* Leaderboard Table */
+#betsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#betsTable thead th {
+    background-color: #2b2857; /* Dark blue/purple */
+    color: #f7d002; /* Yellow */
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #f7d002;
+    font-size: 1.1em;
+}
+
+#betsTable tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: #e0e0e0;
+}
+
+#betsTable tbody tr:nth-child(even) {
+    background-color: #1f1c4a; /* Slightly different shade for even rows */
+}
+
+#betsTable tbody tr:hover {
+    background-color: #2b2857; /* Highlight on hover */
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #0a0820; /* Even darker blue */
+    color: #888;
+    margin-top: 30px;
+    font-size: 0.9em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+
+    section h2 {
+        font-size: 1.8em;
+    }
+
+    .team-logo-small {
+        width: 50px;
+        height: 50px;
+    }
+
+    .score-input-container input[type="number"] {
+        width: 60px;
+        font-size: 1.5em;
+    }
+
+    .score-separator {
+        font-size: 2em;
+    }
+
+    .form-actions {
+        flex-direction: column; /* Botões empilhados em telas menores */
+        gap: 10px;
+    }
+
+    .btn-submit, .btn-secondary {
+        flex: auto; /* Ocupam largura total */
+        font-size: 1.2em;
+        padding: 12px;
+    }
+
+    #betsTable thead th,
+    #betsTable tbody td {
+        padding: 10px;
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: 95%;
+        padding: 10px 0;
+    }
+
+    header h1 {
+        font-size: 1.5em;
+    }
+    header p {
+        font-size: 0.9em;
+    }
+    .header-banner {
+        height: 120px;
+    }
+
+    section {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    section h2 {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+
+    .form-group input, .form-group select {
+        padding: 10px;
+        font-size: 1em;
+    }
+
+    .team-logo-small {
+        width: 40px;
+        height: 40px;
+    }
+
+    .score-input-container input[type="number"] {
+        width: 50px;
+        font-size: 1.3em;
+    }
+
+    .score-separator {
+        font-size: 1.8em;
+    }
+}
+
+
+

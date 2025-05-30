@@ -1,0 +1,129 @@
+/* custom-select2.css */
+
+/* Container principal do Select2 */
+.select2-container--default .select2-selection--single {
+    height: 48px !important; /* Adicione !important para garantir precedência */
+    border: 2px solid #2b2857 !important;
+    border-radius: 8px !important;
+    background-color: #2b2857 !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 12px; /* Adicione padding horizontal para o texto */
+}
+
+/* Estado de foco do Select2 */
+.select2-container--default .select2-selection--single:focus,
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #f7d002 !important;
+    box-shadow: 0 0 8px rgba(247, 208, 2, 0.5) !important;
+    outline: none !important;
+}
+
+/* Texto selecionado dentro do Select2 */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #fff !important;
+    padding-left: 0 !important; /* Remove o padding padrão para que o flexbox do container cuide disso */
+    line-height: normal !important; /* Reset para garantir alinhamento */
+}
+
+/* Placeholder do Select2 */
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #888 !important; /* Cor do placeholder */
+}
+
+/* Seta do dropdown */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 46px !important;
+    right: 1px !important;
+    width: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: #f7d002 transparent transparent transparent !important;
+    border-width: 6px 4px 0 4px !important;
+}
+
+/* Seta do dropdown ao abrir (aponta para cima) */
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent #f7d002 transparent !important;
+    border-width: 0 4px 6px 4px !important;
+}
+
+/* Dropdown de resultados (onde aparecem as opções) */
+.select2-container--default .select2-dropdown {
+    border: 2px solid #f7d002 !important;
+    border-radius: 8px !important;
+    background-color: #1a1740 !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
+    overflow: hidden !important;
+}
+
+/* Barra de busca dentro do dropdown (se habilitada) */
+.select2-search--dropdown .select2-search__field {
+    background-color: #2b2857 !important;
+    border: 1px solid #f7d002 !important;
+    color: #fff !important;
+    padding: 8px !important;
+    border-radius: 5px !important;
+    margin: 5px !important;
+}
+
+.select2-search--dropdown .select2-search__field::placeholder {
+    color: #888 !important;
+}
+
+/* Resultados individuais na lista */
+.select2-container--default .select2-results__option {
+    padding: 10px 12px !important;
+    color: #e0e0e0 !important;
+}
+
+/* Opção hover/selecionada */
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #f7d002 !important;
+    color: #1a1740 !important;
+}
+
+/* Opção selecionada permanentemente (se multi-select) */
+.select2-container--default .select2-results__option--selected {
+    background-color: #2b2857 !important;
+    color: #f7d002 !important;
+}
+
+/* Optgroup (categorias de jogadores) */
+.select2-container--default .select2-results__option.select2-results__option--group {
+    background-color: #0a0820 !important;
+    color: #f7d002 !important;
+    font-weight: 700 !important;
+    padding: 10px 12px !important;
+    cursor: default !important;
+}
+
+/* Scrollbar (opcional, para estilizar a barra de rolagem) */
+.select2-results__options {
+    scrollbar-width: thin !important;
+    scrollbar-color: #f7d002 #2b2857 !important;
+}
+
+.select2-results__options::-webkit-scrollbar {
+    width: 8px !important;
+}
+
+.select2-results__options::-webkit-scrollbar-track {
+    background: #2b2857 !important;
+    border-radius: 4px !important;
+}
+
+.select2-results__options::-webkit-scrollbar-thumb {
+    background-color: #f7d002 !important;
+    border-radius: 4px !important;
+    border: 2px solid #2b2857 !important;
+}
+
+/* Correção para o "box-sizing" que pode afetar a altura */
+.select2-container * {
+    box-sizing: border-box !important;
+}
