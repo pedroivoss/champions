@@ -59,7 +59,7 @@ class ChampionsController extends Controller
             $cpf = preg_replace('/[^0-9]/', '', $request->input('playerCPF'));
 
             //verfica se CPF já existe na tabela apostas, maximo 3 por cpf
-            $apostasCount = apostas::where('cpf', $cpf)->count();
+            $apostasCount = apostas::where('cpf', $cpf)->where('status', 1)->count();
 
             if ($apostasCount >= 3) {
                 return $this->error('Você já registrou o máximo de 3 apostas.', 422); // 422 Unprocessable Entity
@@ -106,7 +106,17 @@ class ChampionsController extends Controller
             // Retornar falha
             return $this->error('Erro interno do servidor ao registrar a aposta.');
         }
-    }
+    }//fm funcao
 
+    public function getListaDeApostas()
+    {
+        // Busca todas as apostas da tabela 'apostas'
+        // Você pode ordenar, limitar, etc., se quiser:
+        // $bets = Aposta::orderBy('created_at', 'desc')->get();
+        $data['bets'] = apostas::where('status', 1)->orderBy('created_at', 'desc')->get(); // Pega todas as apostas ativas, ordenadas por data de criação
+
+        // O response()->json() converte a coleção de modelos em um array JSON
+
+    }//fm funcao
 
 }//fm class

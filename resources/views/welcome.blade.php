@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Champions League 2025 Final - Bolão!</title>
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -199,6 +200,9 @@
     </footer>
 
 {{--<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
+    <script>
+        const base_URL = "{{ env('APP_URL') }}";
+    </script>
     <script src="{{ asset('js/plugins/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/plugins/select2.min.js') }}"></script>
     <script src="{{ asset('js/plugins/sweetalert2.all.min.js') }}"></script>
@@ -285,6 +289,7 @@
             // Lida com o envio do formulário
             if (betForm) {
                 betForm.addEventListener('submit', async (event) => {
+                    bloquear()
                     event.preventDefault();
 
                     const formData = new FormData(betForm);
@@ -292,6 +297,8 @@
 
                     // Nova validação de CPF no JS
                     if (!isValidCPF(data.playerCPF)) {
+                        desbloquear()
+                        // Exibe um alerta de erro se o CPF for inválido
                         Swal.fire({
                             icon: 'error',
                             title: 'CPF Inválido',
@@ -301,6 +308,7 @@
                     }
 
                     if (!data.playerName || !data.playerCPF || data.scoreTeam1 === '' || data.scoreTeam2 === '') {
+                            desbloquear()
                             Swal.fire({
                                 icon: 'warning',
                                 title: 'Campos Obrigatórios',
@@ -323,11 +331,13 @@
 
                         if (result.success) {
                             // Exibe um alerta de sucesso
-                             @php
+                            @php
                                 $url_image = env('APP_URL'). '/images/figurinhas';
                             @endphp
 
                             let randonomImage =  randonImage()
+
+                            desbloquear()
 
                             Swal.fire({
                                 icon: 'success',
@@ -377,6 +387,7 @@
                             $('.select2-enable').val(null).trigger('change'); // Reseta Select2
                             loadBets();
                         } else {
+                            desbloquear()
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Erro ao Registrar Aposta',
@@ -384,6 +395,7 @@
                             });
                         }
                     } catch (error) {
+                        desbloquear()
                         Swal.fire({
                             icon: 'error',
                             title: 'Erro',
