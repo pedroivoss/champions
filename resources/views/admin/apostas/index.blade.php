@@ -102,6 +102,40 @@
             text-align: center;
             font-size: 0.9em;
         }
+
+        .swal2-container {
+            z-index: 20000 !important;
+        }
+
+        .swal2-input{
+        z-index: 20000 !important;
+        }
+        .blockUI {
+            z-index: 9998 !important;
+        }
+
+        .modal {
+            z-index: 9996 !important;
+            padding-right: 0px !important;
+        }
+
+        .modal-open {
+            padding-right: 0px !important;
+        }
+
+        .blockOverlay {
+            z-index: 9997 !important;
+        }
+
+        .select2-container .select2-selection--multiple .select2-selection__choice {
+            background-color: #5864c2 !important;
+            border-color: #5864c2 !important;
+            color: #fff !important;
+        }
+
+        .spaceMarginTop {
+            margin-top: 2ch;
+        }
     </style>
 </head>
 <body>
@@ -166,12 +200,14 @@
                             <table class="table table-custom table-hover" id="apostasTable">
                                 <thead>
                                     <tr>
-                                        <th>Nome</th>
-                                        <th>CPF</th>
                                         <th>Placar</th>
                                         <th>1º Gol</th>
                                         <th>1º Cartão</th>
-                                        <th>Data</th>
+                                        <th>Nome</th>
+                                        <th>CPF</th>
+                                        <th>Id</th>
+                                        <th>Registro</th>
+                                        <th>status</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -179,38 +215,42 @@
                                     {{-- Loop para exibir as últimas 5 apostas --}}
                                     @foreach ($apostas as $a)
                                         <tr>
-                                            <td>{{ $a->nome }}</td>
-                                            <td>{{ $a->cpf }}</td>
                                             <td>PSG {{ $a->timeA }} x {{ $a->timeB }} Inter </td>
                                             <td>{{ $a->pri_gol }}</td>
                                             <td>{{ $a->pri_cartao }}</td>
+                                            <td>{{ $a->nome }}</td>
+                                            <td>{{ substr($a->cpf, 0, 3) . '.' . substr($a->cpf, 3, 3) . '.' . substr($a->cpf, 6, 3) . '-' . substr($a->cpf, 9, 2) }}</td>
+                                            <td>{{ $a->id }}</td>
                                             <td>{{ $a->created_at->format('d/m/Y H:i') }}</td>
                                             <td>
-                                                <button class="btn btn-custom-secondary btn-sm" data-toggle="modal" data-target="#apostaDetailsModal"
-                                                        data-id="{{ $a->id }}"
-                                                        {{--data-nome="{{ $a->nome }}"
-                                                        data-cpf="{{ $a->cpf }}"
-                                                        data-placar="{{ $a->placar }}"
-                                                        data-pri_gol="{{ $a->pri_gol }}"
-                                                        data-pri_cartao="{{ $a->pri_cartao }}"
-                                                        data-data="{{ $a->created_at->format('d/m/Y H:i') }}"--}}>
+                                                @if(1 == $a->status)
+                                                    <span class="badge badge-success">Ativo</span>
+                                                @else
+                                                    <span class="badge badge-danger">Excluido</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(1 == $a->status)
+                                                <button class="btn btn-success btn-sm btnApostaDetails" value="{{ $a->id }}" tipo="S">
                                                     Ver Detalhes
                                                 </button>
+                                                @endif
                                             </td>
                                         </tr>
-
                                     @endforeach
 
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>Nome</th>
-                                        <th>CPF</th>
                                         <th>Placar</th>
                                         <th>1º Gol</th>
                                         <th>1º Cartão</th>
-                                        <th>Data</th>
-                                        <th></th> {{-- Coluna de ações não precisa de busca --}}
+                                        <th>Nome</th>
+                                        <th>CPF</th>
+                                        <th>Id</th>
+                                        <th>Registro</th>
+                                        <th></th>
+                                        <th></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -231,27 +271,15 @@
     <div class="modal fade" id="apostaDetailsModal" tabindex="-1" role="dialog" aria-labelledby="apostaDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-dark" id="apostaDetailsModalLabel">Detalhes da Aposta</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-dark">
-                    <p><strong>Nome:</strong> <span id="modal-nome"></span></p>
-                    <p><strong>CPF:</strong> <span id="modal-cpf"></span></p>
-                    <p><strong>Placar:</strong> <span id="modal-placar"></span></p>
-                    <p><strong>Primeiro Gol:</strong> <span id="modal-pri_gol"></span></p>
-                    <p><strong>Primeiro Cartão:</strong> <span id="modal-pri_cartao"></span></p>
-                    <p><strong>Data da Aposta:</strong> <span id="modal-data"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                </div>
+                <div id="htmlModalContent"></div>
             </div>
         </div>
     </div>
 
+    <script>
+        const base_URL = "{{ env('APP_URL') }}";
+        const csrf_token = "{{ csrf_token() }}";
+    </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="{{ asset('js/plugins/jquery-3.7.1.min.js') }}"></script>
@@ -267,6 +295,14 @@
 
     <script>
         $(document).ready(function() {
+            @include("helpers.js.abreModal",[
+                    "tipo" =>"editar",
+                    "nome_editar"=> "btnApostaDetails",
+                    "rota_name"=> "get.modal.manager.aposta",
+                    "html"=> "htmlModalContent",
+                    "modal"=> "apostaDetailsModal"
+            ]){{-- abre modalAddEditPaymentDate --}}
+
             // Inicializa o DataTables
             var table = $('#apostasTable').DataTable({
                 responsive: true, // Habilita a responsividade
@@ -277,7 +313,7 @@
                     // Adiciona inputs de pesquisa ao rodapé para cada coluna
                     this.api().columns().every(function () {
                         var column = this;
-                        if (column.index() < 6) { // Aplica a pesquisa apenas nas primeiras 6 colunas
+                        if (column.index() < 8) { // Aplica a pesquisa apenas nas primeiras 6 colunas
                             var input = $('<input type="text" placeholder="Pesquisar..." />')
                                 .appendTo($(column.footer()).empty())
                                 .on('keyup change clear', function () {
@@ -292,24 +328,191 @@
                     });
                 }
             });
+        });
 
-            // Lidar com o clique no botão "Ver Detalhes" para popular o modal
-            $('#apostasTable').on('click', '.view-details', function() {
-                var nome = $(this).data('nome');
-                var cpf = $(this).data('cpf');
-                var placar = $(this).data('placar');
-                var pri_gol = $(this).data('pri_gol');
-                var pri_cartao = $(this).data('pri_cartao');
-                var data = $(this).data('data');
+        $(document).on('click', '#btnSalvarAposta', function() {
+                bloquear()
 
-                $('#modal-nome').text(nome);
-                $('#modal-cpf').text(cpf);
-                $('#modal-placar').text(placar);
-                $('#modal-pri_gol').text(pri_gol);
-                $('#modal-pri_cartao').text(pri_cartao);
-                $('#modal-data').text(data);
+                let id = $(this).val();
+                let timeA = document.querySelector("#modal-timeA").value;
+                let timeB = document.querySelector("#modal-timeB").value;
+                let pri_gol = document.querySelector("#modal-pri_gol").value;
+                let pri_cartao = document.querySelector("#modal-pri_cartao").value;
+
+                if(0 == id || null == id || '' == id || isNaN(id)){
+                    desbloquear();
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'ID da aposta não encontrado!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                if(null === timeA || '' === timeA || isNaN(timeA)){
+                    desbloquear();
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'Placar do PSG não pode ser vazio ou inválido!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                if(null === timeB || '' === timeB || isNaN(timeB)){
+                    desbloquear();
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'Placar do Inter não pode ser vazio ou inválido!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                desbloquear()
+
+                $("#apostaDetailsModal").modal("hide");
+
+
+                Swal.fire({
+                    title: 'Tem certeza?',
+                    text: 'Você realmente deseja alterar esta aposta?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545', // Cor de perigo (vermelho)
+                    cancelButtonColor: '#4a4473', // Cor do seu tema
+                    confirmButtonText: 'Sim, alterar!',
+                    cancelButtonText: 'Cancelar',
+                    input: 'text', // Adiciona um campo de input
+                    inputPlaceholder: 'Digite a senha!',
+                    inputValidator: (value) => {
+                        if (value !== 'bazu') {
+                            return 'errou a senha!';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        bloquear()
+
+                        let formData = new FormData()
+
+                        formData.append('id', id)
+                        formData.append('timeA', timeA)
+                        formData.append('timeB', timeB)
+                        formData.append('pri_gol', pri_gol)
+                        formData.append('pri_cartao', pri_cartao)
+
+                        formData.append("_token","{{ csrf_token() }}")
+
+                        fetch(`{{ route('update.aposta')}}`, {
+                                method: 'POST',
+                                body: formData,
+                        }).then(function(response) {
+                            response.json().then(function(data) {
+                                if(true == data.success){
+                                    desbloquear()
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: data.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#3085d6',
+                                        confirmButtonText: 'Ok'
+                                    }).then(function () {
+                                        bloquear()
+                                        window.location.reload();
+                                    })
+                                }else{
+                                    desbloquear()
+                                    Swal.fire(
+                                        'Warning!',
+                                        data.message,
+                                        'warning'
+                                    )
+                                    $("#apostaDetailsModal").modal('show')
+                                }
+                            })//fim response
+                        }).catch(function(err) {
+                            desbloquear()
+                            Swal.fire('Erro!',err,'error')
+                            $("#apostaDetailsModal").modal("show");
+
+                        })//fim fetch
+
+                    }else{
+                        $("#apostaDetailsModal").modal("show");
+                    }
+                });
+
+        });
+
+        $(document).on('click', '#btnDeleteAposta', function() {
+
+            $("#apostaDetailsModal").modal("hide");
+            let id = $(this).data('id');
+
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Você realmente deseja apagar esta aposta? Esta ação é irreversível!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545', // Cor de perigo (vermelho)
+                cancelButtonColor: '#4a4473', // Cor do seu tema
+                confirmButtonText: 'Sim, apagar!',
+                cancelButtonText: 'Cancelar',
+                input: 'text', // Adiciona um campo de input
+                inputPlaceholder: 'Digite a senha!',
+                inputValidator: (value) => {
+                    if (value !== 'bazu') {
+                        return 'errou a senha!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let formData = new FormData()
+
+                    formData.append('id', id)
+                    formData.append("_token","{{ csrf_token() }}")
+
+                    fetch(`{{ route('delete.aposta')}}`, {
+                            method: 'POST',
+                            body: formData,
+                    }).then(function(response) {
+                        response.json().then(function(data) {
+                            if(true == data.success){
+                                desbloquear()
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#3085d6',
+                                    confirmButtonText: 'Ok'
+                                }).then(function () {
+                                    window.location.reload();
+                                })
+                            }else{
+                                desbloquear()
+                                Swal.fire(
+                                    'Warning!',
+                                    data.message,
+                                    'warning'
+                                )
+                                $("#apostaDetailsModal").modal('show')
+                            }
+                        })//fim response
+                    }).catch(function(err) {
+                            desbloquear()
+                            Swal.fire('Erro!',err,'error')
+                    })//fim fetch
+                }else{
+                    $("#apostaDetailsModal").modal("show");
+                }
             });
         });
+
     </script>
 </body>
 </html>

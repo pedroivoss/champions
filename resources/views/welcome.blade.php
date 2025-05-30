@@ -202,6 +202,7 @@
 {{--<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>--}}
     <script>
         const base_URL = "{{ env('APP_URL') }}";
+        const csrf_token = "{{ csrf_token() }}";
     </script>
     <script src="{{ asset('js/plugins/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/plugins/select2.min.js') }}"></script>

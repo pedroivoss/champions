@@ -15,4 +15,7 @@ Route::controller(ChampionsController::class)->group(function () {
 
 Route::controller(ApostasController::class)->group(function () {
     Route::get('/admin/apostas','adminApostas')->name('admin.apostas');
+    Route::post('/admin/getModalManagerAposta','getModalManagerAposta')->name('get.modal.manager.aposta');
+    Route::post('/admin/updateAposta','updateAposta')->name('update.aposta');
+    Route::post('/admin/deleteAposta','deleteAposta')->name('delete.aposta');
 });

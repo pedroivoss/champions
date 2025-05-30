@@ -35,5 +35,81 @@ class ApostasController extends Controller
         $data['apostas'] = apostas::orderBy('status', 'desc')->orderBy('created_at', 'desc')->get();
 
         return view('admin.apostas.index', $data);
-    }
-}
+    }//fim funcao
+
+    public function getModalManagerAposta(Request $request)
+    {
+        $apostaId = $request->id;
+
+        $dataAposta = apostas::find($apostaId);
+
+        if (!$dataAposta) {
+            return $this->error('Aposta não encontrada.', 404);
+        }
+
+        $dataModal['id'] = $dataAposta->id;
+        $dataModal['nome'] = $dataAposta->nome;
+        $dataModal['cpf'] = $dataAposta->cpf;
+        $dataModal['timeA'] = $dataAposta->timeA;
+        $dataModal['timeB'] = $dataAposta->timeB;
+        $dataModal['pri_gol'] = $dataAposta->pri_gol;
+        $dataModal['pri_cartao'] = $dataAposta->pri_cartao;
+        $dataModal['valor_aposta'] = $dataAposta->valor_aposta;
+        $dataModal['created_at'] = $dataAposta->created_at->format('d/m/Y H:i:s');
+        $dataModal['status'] = $dataAposta->status;
+
+        $html = (string) view('admin.apostas.modal', $dataModal);
+
+        return $this->modal($html);
+    }//fim funcao
+
+    public function updateAposta(Request $request)
+    {
+        $id = $request->id;
+        $timeA = $request->timeA;
+        $timeB = $request->timeB;
+        $pri_gol = $request->pri_gol;
+        $pri_cartao = $request->pri_cartao;
+
+        $dataAposta = apostas::find($id);
+        if (!$dataAposta) {
+            return $this->error('Aposta não encontrada.', 404);
+        }
+
+        $recalcularValorAposta = 15; // Valor base da aposta
+
+        if (null != $pri_gol || '' != $pri_gol || false != $pri_gol) {
+            $recalcularValorAposta += 10; // Aposta com previsão de gol
+        }
+        if (null != $pri_cartao || '' != $pri_cartao || false != $pri_cartao) {
+            $recalcularValorAposta += 5; // Aposta com previsão de cartão
+        }
+
+        // Atualiza os campos da aposta
+        $dataAposta->timeA = $timeA;
+        $dataAposta->timeB = $timeB;
+        $dataAposta->pri_gol = $pri_gol;
+        $dataAposta->pri_cartao = $pri_cartao;
+        $dataAposta->valor_aposta = $recalcularValorAposta;
+        $dataAposta->save();
+
+        return $this->Success('Aposta atualizada com sucesso!');
+
+    }//fim funcao
+
+    public function deleteAposta(Request $request)
+    {
+        $id = $request->id;
+
+        $dataAposta = apostas::find($id);
+        if (!$dataAposta) {
+            return $this->error('Aposta não encontrada.', 404);
+        }
+
+        // Marca a aposta como inativa
+        $dataAposta->status = 0; // 0 para inativo
+        $dataAposta->save();
+
+        return $this->Success('Aposta excluída com sucesso!');
+    }//fim funcao
+}//fim classe
