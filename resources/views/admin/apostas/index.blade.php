@@ -221,7 +221,7 @@
                                             <td>{{ $a->nome }}</td>
                                             <td>{{ substr($a->cpf, 0, 3) . '.' . substr($a->cpf, 3, 3) . '.' . substr($a->cpf, 6, 3) . '-' . substr($a->cpf, 9, 2) }}</td>
                                             <td>{{ $a->id }}</td>
-                                            <td>{{ $a->created_at->format('d/m/Y H:i') }}</td>
+                                            <td>{{ $a->created_at->subHours(3)->format('d/m/Y H:i') }}</td>
                                             <td>
                                                 @if(1 == $a->status)
                                                     <span class="badge badge-success">Ativo</span>
